@@ -44,7 +44,7 @@ var dryRun bool
 var RootCmd = &cobra.Command{
 	Use:   "like-my-friend",
 	Short: "Like all of the pictures on an instgram account quickly",
-	Long: `If your significant other likes you to be quick to like their photos,
+	Long: `If your friend likes you to be quick to like their photos,
 this app will poll the latest feed, determine if you've liked their feed recently
 and like the photo if you haven't`,
 	// Uncomment the following line if your bare application
