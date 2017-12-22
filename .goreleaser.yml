@@ -10,3 +10,5 @@ builds:
 # Archive customization
 archive:
   format: tar.gz
+dockers:
+  - image: jaxxstorm/like-my-friend
