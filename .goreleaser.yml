@@ -1,0 +1,12 @@
+builds:
+  - main: main.go
+    binary: like-my-friend
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+# Archive customization
+archive:
+  format: tar.gz
