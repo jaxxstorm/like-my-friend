@@ -87,7 +87,11 @@ and like the photo if you haven't`,
 			//spew.Dump(item)
 
 			if item.HasLiked == false {
-				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Warning("Photo not liked")
+				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Warning("Photo not liked, liking it!")
+				_, err := insta.Like(item.ID)
+				if err != nil {
+					log.Error("Error liking photo", err)
+				}
 			} else {
 				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Photo already liked!")
 			}
