@@ -1,0 +1,4 @@
+package: github.com/jaxxstorm/like-my-friend
+import:
+- package: github.com/ahmdrz/goinsta
+  version: ^1.1.0
