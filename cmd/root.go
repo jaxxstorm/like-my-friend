@@ -38,6 +38,8 @@ var username string
 var password string
 var account string
 
+var dryRun bool
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "like-my-friend",
@@ -52,6 +54,7 @@ and like the photo if you haven't`,
 		username = viper.GetString("username")
 		password = viper.GetString("password")
 		account = viper.GetString("account")
+		dryRun = viper.GetBool("dryRun")
 
 		if username == "" {
 			log.Fatal("Please specify a username to login as")
@@ -88,9 +91,13 @@ and like the photo if you haven't`,
 
 			if item.HasLiked == false {
 				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Warning("Photo not liked, liking it!")
-				_, err := insta.Like(item.ID)
-				if err != nil {
-					log.Error("Error liking photo", err)
+				if dryRun == true {
+					log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Would have liked photo, but dry run enabled")
+				} else {
+					_, err := insta.Like(item.ID)
+					if err != nil {
+						log.Error("Error liking photo", err)
+					}
 				}
 			} else {
 				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Photo already liked!")
@@ -112,12 +119,14 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.like-my-friend.yaml)")
-	RootCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "the username for your account")
-	RootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "the password for your account")
-	RootCmd.PersistentFlags().StringVarP(&account, "account", "a", "", "the instagram account to watch")
+	RootCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "The username for your account")
+	RootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "The password for your account")
+	RootCmd.PersistentFlags().StringVarP(&account, "account", "a", "", "The instagram account to watch")
+	RootCmd.PersistentFlags().BoolVarP(&dryRun, "dryrun", "d", false, "Show what photos you'd like")
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 	viper.BindPFlag("username", RootCmd.PersistentFlags().Lookup("username"))
 	viper.BindPFlag("account", RootCmd.PersistentFlags().Lookup("account"))
+	viper.BindPFlag("dryrun", RootCmd.PersistentFlags().Lookup("dryrun"))
 }
 
 // initConfig reads in config file and ENV variables if set.
