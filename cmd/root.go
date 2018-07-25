@@ -37,6 +37,7 @@ var cfgFile string
 var username string
 var password string
 var account string
+var posts int
 
 var dryRun bool
 
@@ -79,28 +80,28 @@ and like the photo if you haven't`,
 		}
 
 		friendID := friend.User.ID
-		//spew.Dump(friend.User)
 
 		log.Printf("Checking User %s with name %s and Instagram ID is %v", account, friend.User.FullName, friendID)
 
 		feed, err := insta.LatestUserFeed(friendID)
 
-		for _, item := range feed.Items {
+		for num, item := range feed.Items {
 
-			//spew.Dump(item)
+			if posts > 0 && num < posts {
 
-			if item.HasLiked == false {
-				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Warning("Photo not liked, liking it!")
-				if dryRun == true {
-					log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Would have liked photo, but dry run enabled")
-				} else {
-					_, err := insta.Like(item.ID)
-					if err != nil {
-						log.Error("Error liking photo", err)
+				if item.HasLiked == false {
+					log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Warning("Photo not liked, liking it!")
+					if dryRun == true {
+						log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Would have liked photo, but dry run enabled")
+					} else {
+						_, err := insta.Like(item.ID)
+						if err != nil {
+							log.Error("Error liking photo", err)
+						}
 					}
+				} else {
+					log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Photo already liked!")
 				}
-			} else {
-				log.WithFields(log.Fields{"status": item.HasLiked, "ID": item.ID, "#_comments": item.CommentCount}).Info("Photo already liked!")
 			}
 		}
 	},
@@ -122,11 +123,13 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&username, "username", "u", "", "The username for your account")
 	RootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "The password for your account")
 	RootCmd.PersistentFlags().StringVarP(&account, "account", "a", "", "The instagram account to watch")
+	RootCmd.PersistentFlags().IntVarP(&posts, "posts", "P", 10, "Number of posts to like")
 	RootCmd.PersistentFlags().BoolVarP(&dryRun, "dryrun", "d", false, "Show what photos you'd like")
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 	viper.BindPFlag("username", RootCmd.PersistentFlags().Lookup("username"))
 	viper.BindPFlag("account", RootCmd.PersistentFlags().Lookup("account"))
 	viper.BindPFlag("dryrun", RootCmd.PersistentFlags().Lookup("dryrun"))
+	viper.BindPFlag("posts", RootCmd.PersistentFlags().Lookup("posts"))
 }
 
 // initConfig reads in config file and ENV variables if set.

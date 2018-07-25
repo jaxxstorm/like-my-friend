@@ -19,6 +19,7 @@ Flags:
       --config string     config file (default is $HOME/.like-my-friend.yaml)
   -d, --dryrun            Show what photos you'd like
   -p, --password string   The password for your account
+  -P, --posts int         Number of posts to like (default 10)
   -u, --username string   The username for your account
 ```
 
